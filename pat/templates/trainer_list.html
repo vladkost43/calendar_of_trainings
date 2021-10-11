@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for train in trainer %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('trainer', trainer_id=train.id) }}"><p>{{ train.user.first_name }} {{ train.user.last_name }}</p></a>
+            </div>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}

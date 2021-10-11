@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="/learner" method="POST">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            {{ form.first_name.label }}
+            {% if form.first_name.errors %}
+            {{ form.first_name(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.first_name.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.first_name(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+         <div class="form-group">
+            {{ form.last_name.label }}
+            {% if form.last_name.errors %}
+            {{ form.last_name(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.last_name.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.last_name(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.email.label }}
+            {% if form.email.errors %}
+            {{ form.email(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.email.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.email(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.password.label }}
+            {% if form.password.errors %}
+            {{ form.password(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.password.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.password(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.confirm_password.label }}
+            {% if form.confirm_password.errors %}
+            {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.confirm_password.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.confirm_password(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+
+
+        <div class="form-group">
+            {{ form.learner.birthday_date.label }}
+            {% if form.learner.birthday_date.errors %}
+            {{ form.learner.birthday_date(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.learner.birthday_date.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.learner.birthday_date(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+         <div class="form-group">
+            {{ form.learner.height.label }}
+            {% if form.learner.height.errors %}
+            {{ form.learner.height(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.learner.height.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.learner.height(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.learner.gender.label }}
+            {{ form.learner.gender(class="form-control form-control-lg") }}
+        </div>
+        <div class="form-group">
+            {{ form.learner.weight.label }}
+            {% if form.learner.weight.errors %}
+            {{ form.learner.weight(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.learner.weight.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.learner.weight(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.learner.phone_number.label }}
+            {% if form.learner.phone_number.errors %}
+            {{ form.learner.phone_number(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.learner.phone_number.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.learner.phone_number(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+
+
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary")}}
+        </div>
+
+
+    </form>
+{% endblock content %}
