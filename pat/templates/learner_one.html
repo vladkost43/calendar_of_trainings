@@ -9,6 +9,7 @@
           </div>
 
       </div>
+      <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + learner.user.photo) }}">
       <h2 class="article-title"><p>{{ learner.user.first_name }} {{ learner.user.last_name }}</p></h2>
        <p class="article-content">Email: {{ learner.user.email }}</p>
       <p class="article-content">Birthday date: {{ learner.birthday_date }}</p>

@@ -1,12 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-    {% for train in trainer %}
+ <div class="media-body">
+ <form action="/trainer_list" method="POST">
+        {{ form.csrf_token }}
+      <div class="form-group">
+            {{ form.specialization.label }}
+            {{ form.specialization(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary")}}
+        </div>
+    </form>
+       </div>
+
+    {% for train in trainer.items %}
         <article class="media content-section">
+             <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + train.user.photo) }}">
           <div class="media-body">
             <div class="article-metadata">
               <a class="mr-2" href="{{ url_for('trainer', trainer_id=train.id) }}"><p>{{ train.user.first_name }} {{ train.user.last_name }}</p></a>
+                <p>Biography:</p>
+                <p>{{train.biography|truncate(20) }}</p>
             </div>
           </div>
         </article>
+    {% endfor %}
+{% for page_num in trainer.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+      {% if page_num %}
+        {% if trainer.page == page_num %}
+          <a class="btn btn-info mb-4" href="{{ url_for('trainer_list_true', page=page_num) }}">{{ page_num }}</a>
+        {% else %}
+          <a class="btn btn-outline-info mb-4" href="{{ url_for('trainer_list_true', page=page_num) }}">{{ page_num }}</a>
+        {% endif %}
+      {% else %}
+        ...
+      {% endif %}
     {% endfor %}
 {% endblock content %}

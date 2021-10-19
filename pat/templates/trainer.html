@@ -1,15 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
   <article class="media content-section">
+
     <div class="media-body">
       <div class="article-metadata">
 
           <div>
+            {% if current_user.group_id == 4  or  current_user.group_id == 3%}
+            {% if trainers.register == false %}
             <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_trainer', trainer_id=trainers.id) }}">Confirm</a>
+            {% endif %}
             <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
+            {% endif %}
           </div>
 
       </div>
+       <img  class="img-fluid" src="{{ url_for('static', filename='profile_pics/' + trainers.user.photo) }}">
       <h2 class="article-title"><p>{{ trainers.user.first_name }} {{ trainers.user.last_name }}</p></h2>
        <p class="article-content">Email: {{ trainers.user.email }}</p>
       <p class="article-content">Birthday date: {{ trainers.birthday_date }}</p>

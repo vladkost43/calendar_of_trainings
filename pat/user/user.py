@@ -20,7 +20,7 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(128))
     last_name = db.Column(db.String(128))
     _password = db.Column(db.String(200))
-    photo = db.Column(db.String(20))
+    photo = db.Column(db.String(20), default='default.jpg')
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=False)
 
     learner = db.Column(db.Integer, db.ForeignKey('learner.id'))

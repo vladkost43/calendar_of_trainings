@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <form action="/register_trainer" method="POST">
+    <form action="/register_trainer" method="POST" enctype="multipart/form-data">
         {{ form.csrf_token }}
         <div class="form-group">
             {{ form.first_name.label }}
@@ -111,6 +111,15 @@
             {{ form.trainer.biography(class="form-control form-control-lg") }}
             {% endif %}
         </div>
+        <div class="form-group">
+                    {{ form.picture.label() }}
+                    {{ form.picture(class="form-control-file") }}
+                    {% if form.picture.errors %}
+                        {% for error in form.picture.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}
+                </div>
         <div class="form-group">
             {{ form.trainer.specialization.label }}
             {{ form.trainer.specialization(class="form-control form-control-lg") }}

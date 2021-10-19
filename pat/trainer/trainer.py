@@ -11,7 +11,7 @@ class TrainerSpecializationModel(db.Model):
     __tablename__ = 'trainer_specialization'
 
     trainer_id = db.Column(db.Integer, db.ForeignKey('trainer.id'), primary_key=True)
-    specialization_id = db.Column(db.Integer, db.ForeignKey('specialization.id'), primary_key=True)
+    specialization_id = db.Column(db.Integer, db.ForeignKey('specialization.id'), primary_key=True, nullable=False)
 
 
     @classmethod
