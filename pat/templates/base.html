@@ -7,8 +7,10 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.css" />
+
+
 
     {% if title %}
         <title>Flask Blog - {{ title }}</title>
@@ -43,13 +45,13 @@
             <div class="navbar-nav mr-auto">
                 <a class="nav-item nav-link" href="/">Home</a>
                 <a class="nav-item nav-link" href="{{ url_for('trainer_list_true') }}">Trainers</a>
-                <a class="nav-item nav-link" href="#">Trainings</a>
                  {% if current_user.group_id == 3 or current_user.group_id == 4  %}
                 {% if current_user.group_id == 4  %}
               <a class="nav-item nav-link" href="{{ url_for('register_admin') }}">Create_admin</a>
                   {% endif %}
                 {% elif  current_user.group_id == 2 %}
                 <a class="nav-item nav-link" href="#">My trainings</a>
+                <a class="nav-item nav-link" href="{{ url_for('create_training') }}">Create_training</a>
                 {% elif  current_user.group_id == 1%}
                 <a class="nav-item nav-link" href="#">My registrations</a>
                 {% else %}
@@ -72,11 +74,14 @@
         </div>
       </nav>
     </header>
+
     <main role="main" class="container">
+
       <div class="row">
         <div class="col-md-8">
           {% block content %}{% endblock %}
         </div>
+          {% if current_user.group_id !=2 and current_user.group_id !=1  %}
         <div class="col-md-4">
           <div class="content-section">
             <h3>Our Sidebar</h3>
@@ -97,6 +102,7 @@
             </p>
           </div>
         </div>
+          {% endif  %}
       </div>
     </main>
 
@@ -105,7 +111,34 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+  <script>
+  $(document).ready(function() {
+   var calendar = $('#calendar').fullCalendar({
+    editable:true,
+    header:{
+     left:'prev,next today',
+     center:'title',
+     right:'month,agendaWeek,agendaDay',},
+      events: [{% for row in training %}
+      { id : '{{row.id}}', title : '{{row.status}} , {{ row.creator.first_name }} {{ row.creator.last_name }}, {{ row.specialization.specialization }}', start : '{{row.training_start}}', end : '{{row.training_end}}', backgroundColor:'{{ row.specialization.color }}' },
+      {% endfor %}],
+      eventClick:function(event)
+    {
+     if(confirm("Are you sure you want to remove it?"))
+     {
+      let id = event.id;
+      console.log(id);
+      window.location.replace('http://127.0.0.1:5000/training/'+id)
+     }
+    },
 
+    });
+    });
+    </script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>

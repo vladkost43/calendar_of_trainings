@@ -11,6 +11,7 @@ class Group(db.Model):
     group = db.Column(db.String(50), unique=True)
     users = db.relationship('User', backref='group')
 
+
     def __init__(self, *args, **kwargs):
         super(Group, self).__init__(*args, **kwargs)
 

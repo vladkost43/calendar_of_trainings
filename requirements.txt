@@ -37,3 +37,6 @@ Django~=1.11.29
 setuptools~=58.1.0
 six~=1.16.0
 Pillow~=5.1.0
+flask-bootstrap==3.3.7.1
+Flask-Email==1.4.4
+Flask-Mail==0.9.1

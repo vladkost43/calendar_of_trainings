@@ -3,14 +3,17 @@ import secrets
 
 from PIL import Image
 from flask import render_template, flash, url_for, request, current_app
-
+from flask_wtf import FlaskForm
 from werkzeug.security import check_password_hash
 from werkzeug.utils import redirect
 
-from pat import app, Group, User, Trainer, db, Learner
+from pat import app, Group, User, Trainer, db, Learner, Training, mail
 from pat.forms import RegistrationForm, RegistrationLForm, LoginForm, RegistrationAdminForm, FilterTrainers, \
-    UpdateAccountForm, UpdateTrainerAccountForm, UpdateLearnerAccountForm
+    UpdateAccountForm, UpdateTrainerAccountForm, UpdateLearnerAccountForm, UpdateAccountAdminForm, \
+    UpdateTrainerAccountAdminForm, UpdateLearnerAccountAdminForm, CreateTrainingForm, FilterTrainings, RequestResetForm, \
+    ResetPasswordForm
 from flask_login import login_user, current_user, logout_user, login_required
+from flask_mail import Message
 
 
 @app.route('/register_trainer', methods=['GET', 'POST'])
@@ -130,10 +133,17 @@ def trainer_false():
 
 
 @app.route("/")
-@app.route("/home")
+@app.route("/home", methods=['GET', 'POST'])
 def home():
-    trainer = Trainer.query.filter_by(register=False)
-    return render_template('home.html', trainer=trainer)
+    form = FilterTrainings()
+    status = ["open", "closed"]
+    form.status.choices = status
+    if form.validate_on_submit():
+        training = Training.query\
+                .filter_by(specialization=form.specialization.data, status=form.status.data)
+    else:
+        training = Training.query.all()
+    return render_template('home.html', training=training, form=form)
 
 
 @app.route("/trainer_list", methods=['GET', 'POST'])
@@ -210,6 +220,48 @@ def delete_learner(learner_id):
     return redirect(url_for('home'))
 
 
+@app.route("/admin/<int:admin_id>/delete", methods=['POST'])
+@login_required
+def delete_admin(admin_id):
+    user = User.query.get_or_404(admin_id)
+    db.session.delete(user)
+    db.session.commit()
+    flash('Admin has been deleted!', 'success')
+    return redirect(url_for('home'))
+
+
+@app.route("/training/<int:training_id>/delete", methods=['POST'])
+@login_required
+def delete_training(training_id):
+    user = Training.query.get_or_404(training_id)
+    db.session.delete(user)
+    db.session.commit()
+    flash('Training has been deleted!', 'success')
+    return redirect(url_for('home'))
+
+
+@app.route("/training/<int:training_id>/register", methods=['POST'])
+@login_required
+def register(training_id):
+    training = Training.query.get_or_404(training_id)
+    training.learner.append(current_user)
+    db.session.commit()
+    flash('You are registrated!', 'success')
+    return redirect(url_for('home'))
+
+
+@app.route("/training/<int:training_id>/unregister", methods=['POST'])
+@login_required
+def unregister(training_id):
+    training = Training.query.get_or_404(training_id)
+    training.learner.remove(current_user)
+    db.session.commit()
+    flash('You are unregistrated on training!', 'success')
+    return redirect(url_for('home'))
+
+
+
+
 @app.route("/post/<int:trainer_id>/update", methods=['GET', 'POST'])
 @login_required
 def update_trainer(trainer_id):
@@ -238,10 +290,15 @@ def save_picture(form_picture):
 def account():
     if current_user.group_id == 3 or current_user.group_id == 4:
          form = UpdateAccountForm()
+         training = []
     elif current_user.group_id == 2:
         form = UpdateTrainerAccountForm()
+        training = Training.query \
+            .filter_by(creator=current_user)
     else:
         form = UpdateLearnerAccountForm()
+        training = Training.query \
+            .filter(Training.learner.contains(current_user))
     if form.validate_on_submit():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
@@ -262,12 +319,14 @@ def account():
         print(form.errors)
         return redirect(url_for('account'))
     elif request.method == 'GET':
+
         form.first_name.data = current_user.first_name
         form.last_name.data = current_user.last_name
         form.email.data = current_user.email
         if current_user.group_id == 2:
             form.trainer.phone_number.data = "+38 {0}".format(current_user.trainers.phone_number)
             form.trainer.biography.data = current_user.trainers.biography
+
         if current_user.group_id == 1:
             form.learner.phone_number.data = "+38 {0}".format(current_user.learners.phone_number)
             form.learner.weight.data = current_user.learners.weight
@@ -275,7 +334,155 @@ def account():
     image_file = url_for('static', filename='profile_pics/' + current_user.photo)
     print(form.errors)
     return render_template('account.html', title='Account',
+                           image_file=image_file, form=form, training=training)
+
+
+@app.route("/user/<int:user_id>/update", methods=['GET', 'POST'])
+@login_required
+def update_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.group_id == 3 or user.group_id == 4:
+        form = UpdateAccountAdminForm()
+    elif user.group_id == 2:
+        form = UpdateTrainerAccountAdminForm()
+    else:
+        form = UpdateLearnerAccountAdminForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            user.photo = picture_file
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        if user.group_id == 2:
+            user.trainers.phone_number = form.trainer.phone_number.data
+            user.trainers.boigraphy = form.trainer.biography.data
+        if user.group_id == 1:
+            user.learners.phone_number = form.learner.phone_number.data
+            user.learners.weight = form.learner.weight.data
+            user.learners.height = form.learner.height.data
+
+        db.session.commit()
+        flash('User account has been updated!', 'success')
+        print(form.errors)
+        return redirect(url_for('home'))
+    elif request.method == 'GET':
+        form.first_name.data = user.first_name
+        form.last_name.data = user.last_name
+
+        if user.group_id == 2:
+            form.trainer.phone_number.data = "+38 {0}".format(user.trainers.phone_number)
+            form.trainer.biography.data = user.trainers.biography
+        if user.group_id == 1:
+            form.learner.phone_number.data = "+38 {0}".format(user.learners.phone_number)
+            form.learner.weight.data = user.learners.weight
+            form.learner.height.data = user.learners.height
+    image_file = url_for('static', filename='profile_pics/' + user.photo)
+    print(form.errors)
+    return render_template('user_update.html', title='Account', user=user,
                            image_file=image_file, form=form)
+
+
+@app.route('/create_training', methods=['GET', 'POST'])
+@login_required
+def create_training():
+    form = CreateTrainingForm()
+    if form.validate_on_submit():
+        if not form.specialization.data in current_user.trainers.specialization:
+            flash('Choose trainer specializations', 'danger')
+            return redirect(url_for('create_training'))
+        training = Training(description=form.description.data,
+                    place=form.place.data,
+                    creator = current_user,
+                    training_start=form.training_start.data,
+                    training_end=form.training_end.data,
+                    specialization=form.specialization.data,
+                    gender=form.gender.data,
+                    number=form.number.data)
+        db.session.add(training)
+        db.session.commit()
+        flash('Training has been created!', 'success')
+        print(form.errors)
+        return redirect(url_for('home'))
+    print(form.errors)
+    return render_template('create_training.html', form=form)
+
+@app.route("/training/<int:training_id>")
+def training(training_id):
+    trainings = Training.query.get_or_404(training_id)
+    return render_template('training.html', trainings=trainings)
+
+@app.route("/training/<int:training_id>/update", methods=['GET', 'POST'])
+@login_required
+def update_training(training_id):
+    training= Training.query.get_or_404(training_id)
+    form = CreateTrainingForm()
+    if form.validate_on_submit():
+
+        training.training_start = form.training_start.data
+        training.training_end = form.training_end.data
+        training.description = form.description.data
+        training.place = form.place.data
+        training.gender = form.gender.data
+        training.specialization = form.specialization.data
+        training.number = form.number.data
+        db.session.commit()
+        flash('User account has been updated!', 'success')
+        print(form.errors)
+        return redirect(url_for('home'))
+    elif request.method == 'GET':
+        form.training_start.data = training.training_start
+        form.training_end.data = training.training_end
+        form.description.data = training.description
+        form.place.data = training.place
+        form.gender.data = training.gender
+        form.specialization.data = training.specialization
+        form.number.data = training.number
+
+    print(form.errors)
+    return render_template('training_update.html', title='Account', trtaining=training,
+                            form=form)
+
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request',
+                  sender='noreply@demo.com',
+                  recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+{url_for('reset_token', token=token, _external=True)}
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+    mail.send(msg)
+
+
+@app.route("/reset_password", methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html', title='Reset Password', form=form)
+
+
+@app.route("/reset_password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.password = form.password.data
+        db.session.commit()
+        flash('Your password has been updated! You are now able to log in', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_token.html', title='Reset Password', form=form)
 
 
 if __name__ == '__main__':

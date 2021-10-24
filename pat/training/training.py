@@ -1,6 +1,11 @@
 from datetime import datetime
 
+
 from flask_login import UserMixin
+from sqlalchemy import case, and_
+from sqlalchemy.ext.hybrid import hybrid_property
+
+
 from pat import db
 
 
@@ -12,11 +17,12 @@ class Training(UserMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    description = db.Column(db.String(1000), unique=True)
+    description = db.Column(db.String(1000), unique=False)
     place = db.Column(db.String(128))
-    lst_name = db.Column(db.String(128))
     status = db.Column(db.String(128))
-    trainer = db.Column(db.String(128))
+    number = db.Column(db.Integer())
+    creator_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    creator = db.relationship('User')
 
     training_start = db.Column(db.DateTime, default=datetime.utcnow)
     training_end = db.Column(db.DateTime, default=datetime.utcnow)
@@ -27,16 +33,31 @@ class Training(UserMixin, db.Model):
     specialization_id = db.Column(db.Integer, db.ForeignKey('specialization.id'))
     specialization = db.relationship('Specialization')
 
-
-
-    register = db.Column(db.Boolean)
-
-    gender_id = db.Column(db.Integer, db.ForeignKey('gender_traine.id'))
-    gender = db.relationship('GenderTraine')
+    gender_id = db.Column(db.Integer, db.ForeignKey('gender.id'))
+    gender = db.relationship('Gender')
 
 
     def __repr__(self):
         return "<User: {0}>".format(self.id)
+
+
+    @hybrid_property
+    def status(self):
+        """
+        Method for post status< after checking event_date
+        """
+        self.training_start = datetime.strptime(str(self.training_start), "%Y-%m-%d %H:%M:%S")
+        if self.training_start > datetime.now() and len(self.learner) <self.number:
+            return "open"
+        if self.training_start <= datetime.now() or self.training_end <= datetime.now() or len(self.learner) >= self.number:
+            return "closed"
+
+    @status.expression
+    def status(self):
+        print(self.learner)
+        return case([
+            (self.training_start > datetime.now(), "open"),
+        ], else_="closed")
 
 
 class TrainingUserModel(db.Model):

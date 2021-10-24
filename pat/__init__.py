@@ -1,9 +1,11 @@
+import os
+
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
-
+from flask_mail import Mail
 
 app = Flask(__name__)
 
@@ -14,15 +16,22 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 csrf = CSRFProtect(app)
 
 db = SQLAlchemy(app)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = "kostinvlad83@gmail.com"
+app.config['MAIL_PASSWORD'] = "hesoyam123"
+mail = Mail(app)
 csrf.init_app(app)
 migrate = Migrate(app, db)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
+
+
 from pat.group.group import Group
 from pat.gender.gender import Gender
-from pat.gender_traine.gender_traine import GenderTraine
 from pat.specialization.specialization import Specialization
 from pat.user.user import User
 from pat.trainer.trainer import Trainer

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+  <article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+            {% if current_user.group_id == 4  or  current_user.group_id == 3 or trainings.creator == current_user %}
+             <div>
+                {% if trainings.status == "open" %}
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_training', training_id=trainings.id) }}">Update</a>
+               {% endif %}
+            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModals">Delete</button>
+          </div>
+            {% endif %}
+      </div>
+      <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + trainings.creator.photo) }}">
+      <h2 class="article-title"><p>Creator: {{ trainings.creator.first_name }} {{ trainings.creator.last_name }}</p></h2>
+       <p class="article-content">Phone trainer: {{ trainings.creator.trainers.phone_number }}</p>
+      <p class="article-content">Description: {{ trainings.description }}</p>
+      <p class="article-content">Status: {{ trainings.status }}</p>
+      <p class="article-content">Place: <a href="{{ trainings.place }}">{{ trainings.place }}</a></p>
+      <p class="article-content">Training start: {{ trainings.training_start }}</p>
+      <p class="article-content">Training end: {{ trainings.training_end }}</p>
+      <p class="article-content">Rigesters on training: {{ trainings.learner|length }}/{{ trainings.number }}</p>
+      <p class="article-content">Specialization: {{ trainings.specialization.specialization }}</p>
+      <p class="article-content">Gender: {{ trainings.gender.gender }}</p>
+      <div class="media-body">
+        {% if  trainings.creator == current_user %}
+      <p>Register Users:</p>
+      </div>
+      {% for learner in trainings.learner %}
+      <div class="media-body">
+      <article class="media content-section">
+             <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + learner.photo) }}">
+          <div class="media-body">
+            <div class="article-metadata">
+              <p>{{ learner.first_name }} {{ learner.last_name }}</p></a>
+                <p>Phone:{{learner.learners.phone_number }}</p>
+              <p>Height:{{learner.learners.height }}</p>
+              <p>Weight:{{learner.learners.weight }}</p>
+
+            </div>
+          </div>
+        </article>
+      </div>
+      {% endfor %}
+      {% endif %}
+       <div class="media-body">
+      <div class="article-metadata">
+            {% if current_user.group_id == 1  and (current_user.learners.gender == trainings.gender or trainings.gender.gender == "all")  %}
+             <div>
+                {% if trainings.status == "open" and current_user not in trainings.learner and trainings.learner|length < trainings.number %}
+           <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#registerModals">Register</button>
+               {% elif current_user in trainings.learner %}
+            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#unregisterModals">Unregister</button>
+                 {% endif %}
+          </div>
+            {% endif %}
+      </div>
+
+    </div>
+    </div>
+  </article>
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModals" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Training?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form action="{{ url_for('delete_training', training_id=trainings.id) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input class="btn btn-danger"  type="submit" value="Delete">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="modal fade" id="registerModals" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="registerModalLabel">Registrate?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form action="{{ url_for('register', training_id=trainings.id) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input class="btn btn-danger"  type="submit" value="Register">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="modal fade" id="unregisterModals" tabindex="-1" role="dialog" aria-labelledby="unregisterModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="unregisterModalLabel">Registrate?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form action="{{ url_for('unregister', training_id=trainings.id) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input class="btn btn-danger"  type="submit" value="Unregister">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

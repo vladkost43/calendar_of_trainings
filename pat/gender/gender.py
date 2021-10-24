@@ -11,6 +11,7 @@ class Gender(db.Model):
     gender = db.Column(db.String(50), unique=True)
     learner = db.relationship('Learner', backref='gender')
     trainer = db.relationship('Trainer', backref='gender')
+    training = db.relationship('Training', back_populates='gender', lazy="dynamic")
 
     def __init__(self, *args, **kwargs):
         super(Gender, self).__init__(*args, **kwargs)

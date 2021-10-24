@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <form action="/create_training" method="POST">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            {{ form.description.label }}
+            {% if form.description.errors %}
+            {{ form.description(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.description.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.description(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+         <div class="form-group">
+            {{ form.place.label }}
+            {% if form.place.errors %}
+            {{ form.place(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.place.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.place(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.training_start.label }}
+            {% if form.training_start.errors %}
+            {{ form.training_start(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.training_start.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+                 {{ form.training_start(class="form-control-lg form-control") }}
+            {% endif %}
+
+        </div>
+        <div class="form-group">
+            {{ form.training_end.label }}
+            {% if form.training_end.errors %}
+            {{ form.training_end(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.training_end.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.training_end(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.number.label }}
+            {% if form.number.errors %}
+            {{ form.number(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.number.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.number(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+<div class="form-group">
+            {{ form.gender.label }}
+            {{ form.gender(class="form-control form-control-lg") }}
+        </div>
+        <div class="form-group">
+            {{ form.specialization.label }}
+            {{ form.specialization(class="form-control form-control-lg") }}
+        </div>
+           <div class="form-group">
+            {{ form.submit(class="btn btn-primary")}}
+        </div>
+
+
+
+    </form>
+
+{% endblock content %}

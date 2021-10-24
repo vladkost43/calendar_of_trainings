@@ -1,8 +1,8 @@
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
-
-from pat import db, login_manager
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from pat import db, login_manager, app
 
 
 @login_manager.user_loader
@@ -22,6 +22,7 @@ class User(UserMixin, db.Model):
     _password = db.Column(db.String(200))
     photo = db.Column(db.String(20), default='default.jpg')
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=False)
+    creator = db.relationship('Training', back_populates='creator', cascade='all, delete')
 
     learner = db.Column(db.Integer, db.ForeignKey('learner.id'))
     trainer = db.Column(db.Integer, db.ForeignKey('trainer.id'))
@@ -29,6 +30,19 @@ class User(UserMixin, db.Model):
                               secondary="training_user",
                                back_populates="learner",
                               cascade='all, delete')
+
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(app.config['SECRET_KEY'], expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
 
     def __repr__(self):
         return "<User: {0} {1}>".format(self.first_name, self.last_name)
