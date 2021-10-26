@@ -25,12 +25,14 @@ def specialization_query_trainer(user_id):
 def gender_query():
     return Gender.query
 
+def gender_query_user():
+    return Gender.query.limit(2).all()
 
 class RegisterTreanerForm(FlaskForm):
     birthday_date = DateField('Birthday_date', validators=[DataRequired()], format='%Y-%m-%d')
     phone_number = StringField('Phone', validators=[DataRequired()])
     biography = StringField('Biography', validators=[DataRequired()])
-    gender = QuerySelectField('Gender', query_factory=gender_query, allow_blank=False, get_label='gender')
+    gender = QuerySelectField('Gender', query_factory=gender_query_user, allow_blank=False, get_label='gender')
     specialization = QuerySelectMultipleField('Specialization', query_factory=specialization_query, get_label='specialization')
 
     def validate_phone_number(self, phone_number):
@@ -90,7 +92,7 @@ class RegisterLearnerForm(FlaskForm):
     birthday_date = DateField('Birthday_date', validators=[DataRequired()])
     weight = IntegerField('Weight', validators=[NumberRange(min=0, max=250)])
     height = IntegerField('Height', validators=[NumberRange(min=0, max=250)])
-    gender = QuerySelectField('Gender', query_factory=gender_query, allow_blank=False, get_label='gender')
+    gender = QuerySelectField('Gender', query_factory=gender_query_user, allow_blank=False, get_label='gender')
     phone_number = StringField('Phone', validators=[DataRequired()])
 
 
@@ -219,6 +221,7 @@ class AccLearnerForm(FlaskForm):
     weight = IntegerField('Weight', validators=[NumberRange(min=0, max=250)])
     height = IntegerField('Height', validators=[NumberRange(min=0, max=250)])
     phone_number = StringField('Phone', validators=[DataRequired()])
+    gender = QuerySelectField('Gender', query_factory=gender_query_user, allow_blank=False, get_label='gender')
 
 
     def validate_phone_number(self, phone_number):
@@ -228,7 +231,6 @@ class AccLearnerForm(FlaskForm):
                 raise ValueError()
         except (phonenumbers.phonenumberutil.NumberParseException, ValueError):
             raise ValidationError('Invalid phone number')
-
 
 
 class UpdateLearnerAccountForm(FlaskForm):
@@ -253,6 +255,8 @@ class UpdateLearnerAccountForm(FlaskForm):
 class AccTreanerForm(FlaskForm):
     phone_number = StringField('Phone', validators=[DataRequired()])
     biography = StringField('Biography', validators=[DataRequired()])
+    specialization = QuerySelectMultipleField('Specialization', query_factory=specialization_query,
+                                              get_label='specialization')
 
     def validate_phone_number(self, phone_number):
         try:
@@ -292,11 +296,6 @@ class UpdateAccountAdminForm(FlaskForm):
     submit = SubmitField('Update')
 
 
-
-
-
-
-
 class UpdateLearnerAccountAdminForm(FlaskForm):
 
     first_name = StringField('First_name',
@@ -307,8 +306,6 @@ class UpdateLearnerAccountAdminForm(FlaskForm):
     learner = FormField(AccLearnerForm)
 
     submit = SubmitField('Update')
-
-
 
 
 class UpdateTrainerAccountAdminForm(FlaskForm):
@@ -347,8 +344,6 @@ class CreateTrainingForm(FlaskForm):
             return True
 
 
-
-
 class RequestResetForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
@@ -358,6 +353,7 @@ class RequestResetForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
             raise ValidationError('There is no account with that email. You must register first.')
+
 
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])

@@ -1,5 +1,6 @@
 from pat import db
 
+
 class Specialization(db.Model):
     """
     Group model

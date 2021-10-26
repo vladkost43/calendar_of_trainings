@@ -19,7 +19,9 @@
       </div>
        <img  class="img-fluid" src="{{ url_for('static', filename='profile_pics/' + trainers.user.photo) }}">
       <h2 class="article-title"><p>{{ trainers.user.first_name }} {{ trainers.user.last_name }}</p></h2>
+      {% if current_user.group_id == 4  or  current_user.group_id == 3%}
        <p class="article-content">Email: {{ trainers.user.email }}</p>
+      {% endif %}
       <p class="article-content">Birthday date: {{ trainers.birthday_date }}</p>
       <p class="article-content">Phone number: {{ trainers.phone_number }}</p>
       <p class="article-content">Biography: {{ trainers.biography }}</p>
@@ -31,6 +33,15 @@
       {% endfor %}
     </div>
   </article>
+
+<article class="media content-section">
+<div class="content-section">
+    <div class="container">
+   <div id="calendar"></div>
+  </div>
+</div>
+</article>
+
   <!-- Modal -->
   <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">

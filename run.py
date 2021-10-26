@@ -1,9 +1,10 @@
+import datetime
 import os
 import secrets
 
 from PIL import Image
 from flask import render_template, flash, url_for, request, current_app
-from flask_wtf import FlaskForm
+
 from werkzeug.security import check_password_hash
 from werkzeug.utils import redirect
 
@@ -179,7 +180,8 @@ def admin_list():
 @login_required
 def trainer(trainer_id):
     trainers = Trainer.query.get_or_404(trainer_id)
-    return render_template('trainer.html', trainers=trainers)
+    training = Training.query.filter_by(creator=trainers.user)
+    return render_template('trainer.html', trainers=trainers, training=training)
 
 
 @app.route("/admin/<int:admin_id>")
@@ -309,10 +311,12 @@ def account():
         if current_user.group_id == 2:
             current_user.trainers.phone_number = form.trainer.phone_number.data
             current_user.trainers.boigraphy = form.trainer.biography.data
+            current_user.trainers.specialization = form.trainer.specialization.data
         if current_user.group_id == 1:
             current_user.learners.phone_number = form.learner.phone_number.data
             current_user.learners.weight = form.learner.weight.data
             current_user.learners.height = form.learner.height.data
+            current_user.learners.gender = form.learner.gender.data
 
         db.session.commit()
         flash('Your account has been updated!', 'success')
@@ -326,11 +330,14 @@ def account():
         if current_user.group_id == 2:
             form.trainer.phone_number.data = "+38 {0}".format(current_user.trainers.phone_number)
             form.trainer.biography.data = current_user.trainers.biography
+            form.trainer.specialization.data = current_user.trainers.specialization
+
 
         if current_user.group_id == 1:
             form.learner.phone_number.data = "+38 {0}".format(current_user.learners.phone_number)
             form.learner.weight.data = current_user.learners.weight
             form.learner.height.data = current_user.learners.height
+            form.learner.gender.data = current_user.learners.gender
     image_file = url_for('static', filename='profile_pics/' + current_user.photo)
     print(form.errors)
     return render_template('account.html', title='Account',
@@ -409,7 +416,8 @@ def create_training():
 @app.route("/training/<int:training_id>")
 def training(training_id):
     trainings = Training.query.get_or_404(training_id)
-    return render_template('training.html', trainings=trainings)
+    times = datetime.datetime.now()
+    return render_template('training.html', trainings=trainings, time=times)
 
 @app.route("/training/<int:training_id>/update", methods=['GET', 'POST'])
 @login_required
