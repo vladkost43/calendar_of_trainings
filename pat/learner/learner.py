@@ -6,7 +6,7 @@ from sqlalchemy_utils import PhoneNumberType
 
 class Learner(UserMixin, db.Model):
     """
-    User model
+    Learner model
     """
     __tablename__ = 'learner'
 
@@ -17,8 +17,6 @@ class Learner(UserMixin, db.Model):
     weight = db.Column(db.Integer)
     gender_id = db.Column(db.Integer, db.ForeignKey('gender.id'))
     user = db.relationship("User", uselist=False, backref="learners")
-
-
 
     def __repr__(self):
         return "{0}".format(self.user.email)

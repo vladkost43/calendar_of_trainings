@@ -44,13 +44,13 @@
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
                 <a class="nav-item nav-link" href="/">Home</a>
-                <a class="nav-item nav-link" href="{{ url_for('trainer_list_true') }}">Trainers</a>
+                <a class="nav-item nav-link" href="{{ url_for('trainers.trainer_list_true') }}">Trainers</a>
                  {% if current_user.group_id == 3 or current_user.group_id == 4  %}
                 {% if current_user.group_id == 4  %}
-              <a class="nav-item nav-link" href="{{ url_for('register_admin') }}">Create_admin</a>
+              <a class="nav-item nav-link" href="{{ url_for('user.register_admin') }}">Create_admin</a>
                   {% endif %}
                 {% elif  current_user.group_id == 2 %}
-                <a class="nav-item nav-link" href="{{ url_for('create_training') }}">Create_training</a>
+                <a class="nav-item nav-link" href="{{ url_for('trainings.create_training') }}">Create_training</a>
                 {% endif %}
 
             </div>
@@ -59,10 +59,10 @@
             <div class="navbar-nav">
               {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link">Status: {{ current_user.group.group }}</a>
-                <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
-                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+                <a class="nav-item nav-link" href="{{ url_for('user.account') }}">Account</a>
+                <a class="nav-item nav-link" href="{{ url_for('user.logout') }}">Logout</a>
               {% else %}
-                <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
+                <a class="nav-item nav-link" href="{{ url_for('user.login') }}">Login</a>
               {% endif %}
             </div>
           </div>
@@ -84,15 +84,15 @@
               <ul class="list-group">
                {% if current_user.group_id == 3 or current_user.group_id == 4  %}
 
-         <a class="nav-item nav-link" href="{{ url_for('learner_list') }}"> <li class="list-group-item list-group-item-light">Learners_List</li></a>
-                <a class="nav-item nav-link" href="{{ url_for('trainer_false') }}"> <li class="list-group-item list-group-item-light">Confirm_trainers</li></a>
+         <a class="nav-item nav-link" href="{{ url_for('learners.learner_list') }}"> <li class="list-group-item list-group-item-light">Learners_List</li></a>
+                <a class="nav-item nav-link" href="{{ url_for('trainers.trainer_false') }}"> <li class="list-group-item list-group-item-light">Confirm_trainers</li></a>
                {% if current_user.group_id == 4  %}
-               <a class="nav-item nav-link" href="{{ url_for('admin_list') }}"> <li class="list-group-item list-group-item-light">Admin_List</li></a>
+               <a class="nav-item nav-link" href="{{ url_for('user.admin_list') }}"> <li class="list-group-item list-group-item-light">Admin_List</li></a>
                    {% endif %}
               {% endif %}
               {% if current_user.is_authenticated == False %}
-                <a class="nav-item nav-link" href="{{ url_for('register_trainer') }}"> <li class="list-group-item list-group-item-light">Register Trainer</li></a>
-              <a class="nav-item nav-link" href="{{ url_for('learner') }}"> <li class="list-group-item list-group-item-light">Register Learner</li></a>
+                <a class="nav-item nav-link" href="{{ url_for('trainers.register_trainer') }}"> <li class="list-group-item list-group-item-light">Register Trainer</li></a>
+              <a class="nav-item nav-link" href="{{ url_for('learners.learner') }}"> <li class="list-group-item list-group-item-light">Register Learner</li></a>
               {% endif %}
               </ul>
             </p>

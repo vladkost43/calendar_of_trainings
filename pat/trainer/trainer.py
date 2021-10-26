@@ -3,6 +3,8 @@ from datetime import datetime
 from flask_login import UserMixin
 from pat import db
 from sqlalchemy_utils import PhoneNumberType
+
+
 class TrainerSpecializationModel(db.Model):
     """
     Many-to-Many relationship model between Event and Authors
@@ -12,7 +14,6 @@ class TrainerSpecializationModel(db.Model):
 
     trainer_id = db.Column(db.Integer, db.ForeignKey('trainer.id'), primary_key=True)
     specialization_id = db.Column(db.Integer, db.ForeignKey('specialization.id'), primary_key=True, nullable=False)
-
 
     @classmethod
     def find_all(cls):
@@ -43,7 +44,6 @@ class Trainer(UserMixin, db.Model):
     specialization = db.relationship('Specialization',
                               secondary="trainer_specialization",
                               back_populates="trainer")
-
 
     def __repr__(self):
         return "<{0} {1}>".format(self.user.first_name, self.user.last_name)

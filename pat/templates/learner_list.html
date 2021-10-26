@@ -5,7 +5,7 @@
           <div class="media-body">
               <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + train.user.photo) }}">
             <div class="article-metadata">
-              <a class="mr-2" href="{{url_for('learner_one', learner_id=train.id)}}"><p>{{ train.user.first_name }} {{ train.user.last_name }}</p></a>
+              <a class="mr-2" href="{{url_for('learners.learner_one', learner_id=train.id)}}"><p>{{ train.user.first_name }} {{ train.user.last_name }}</p></a>
             </div>
           </div>
         </article>
@@ -13,9 +13,9 @@
 {% for page_num in learner.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
       {% if page_num %}
         {% if learner.page == page_num %}
-          <a class="btn btn-info mb-4" href="{{ url_for('learner_list', page=page_num) }}">{{ page_num }}</a>
+          <a class="btn btn-info mb-4" href="{{ url_for('learners.learner_list', page=page_num) }}">{{ page_num }}</a>
         {% else %}
-          <a class="btn btn-outline-info mb-4" href="{{ url_for('learner_list', page=page_num) }}">{{ page_num }}</a>
+          <a class="btn btn-outline-info mb-4" href="{{ url_for('learners.learner_list', page=page_num) }}">{{ page_num }}</a>
         {% endif %}
       {% else %}
         ...

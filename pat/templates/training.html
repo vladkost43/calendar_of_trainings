@@ -6,7 +6,7 @@
             {% if current_user.group_id == 4  or  current_user.group_id == 3 or trainings.creator == current_user %}
              <div>
                 {% if trainings.status == "open" %}
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_training', training_id=trainings.id) }}">Update</a>
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('trainings.update_training', training_id=trainings.id) }}">Update</a>
                {% endif %}
             <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModals">Delete</button>
           </div>
@@ -72,7 +72,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <form action="{{ url_for('delete_training', training_id=trainings.id) }}" method="POST">
+          <form action="{{ url_for('trainings.delete_training', training_id=trainings.id) }}" method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input class="btn btn-danger"  type="submit" value="Delete">
           </form>
@@ -91,7 +91,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <form action="{{ url_for('register', training_id=trainings.id) }}" method="POST">
+          <form action="{{ url_for('trainings.register', training_id=trainings.id) }}" method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input class="btn btn-danger"  type="submit" value="Register">
           </form>
@@ -110,7 +110,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <form action="{{ url_for('unregister', training_id=trainings.id) }}" method="POST">
+          <form action="{{ url_for('trainings.unregister', training_id=trainings.id) }}" method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input class="btn btn-danger"  type="submit" value="Unregister">
           </form>

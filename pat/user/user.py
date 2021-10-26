@@ -9,6 +9,7 @@ from pat import db, login_manager, app
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 class User(UserMixin, db.Model):
     """
     User model
@@ -68,4 +69,3 @@ class User(UserMixin, db.Model):
         if not self._password or not password:
             return False
         return check_password_hash(self._password, password)
-

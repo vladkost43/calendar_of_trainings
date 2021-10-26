@@ -19,7 +19,7 @@
 
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="{{ url_for('trainer', trainer_id=train.id) }}"><p>{{ train.user.first_name }} {{ train.user.last_name }}</p></a>
+              <a class="mr-2" href="{{ url_for('trainers.trainer', trainer_id=train.id) }}"><p>{{ train.user.first_name }} {{ train.user.last_name }}</p></a>
             </div>
           </div>
         </article>
@@ -27,9 +27,9 @@
 {% for page_num in trainer.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
       {% if page_num %}
         {% if trainer.page == page_num %}
-          <a class="btn btn-info mb-4" href="{{ url_for('trainer_false', page=page_num) }}">{{ page_num }}</a>
+          <a class="btn btn-info mb-4" href="{{ url_for('trainers.trainer_false', page=page_num) }}">{{ page_num }}</a>
         {% else %}
-          <a class="btn btn-outline-info mb-4" href="{{ url_for('trainer_false', page=page_num) }}">{{ page_num }}</a>
+          <a class="btn btn-outline-info mb-4" href="{{ url_for('trainers.trainer_false', page=page_num) }}">{{ page_num }}</a>
         {% endif %}
       {% else %}
         ...

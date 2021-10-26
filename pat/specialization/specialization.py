@@ -3,8 +3,7 @@ from pat import db
 
 class Specialization(db.Model):
     """
-    Group model
-    Many-to-one relationship model between User and Group
+    Specialization model
     """
     __tablename__ = 'specialization'
 

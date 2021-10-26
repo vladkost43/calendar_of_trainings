@@ -7,7 +7,7 @@
           <div>
             {% if current_user.group_id == 4  or  current_user.group_id == 3%}
 
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_user', user_id=learner.user.id) }}">Update</a>
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('user.update_user', user_id=learner.user.id) }}">Update</a>
 
             <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModals">Delete</button>
           </div>
@@ -36,7 +36,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <form action="{{ url_for('delete_learner', learner_id=learner.id) }}" method="POST">
+          <form action="{{ url_for('learners.delete_learner', learner_id=learner.id) }}" method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input class="btn btn-danger"  type="submit" value="Delete">
           </form>
